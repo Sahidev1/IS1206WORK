@@ -6,17 +6,12 @@ int main (){
     int status;
     pid_t pid = fork();
     if (pid == -1) printf ("Failed to create child process\n");
-    //execlp("ls","ls", NULL);
     
     if (pid == 0){
-        printf ("Hello i am child: %d \n", (int) getpid());
         execlp("ls","ls", NULL);
     }
     else if (pid > 0){
         wait(&status);
-        printf ("Hello i am parent: %d \n", (int) getpid());
-        printf ("parent status: %d \n", status);
-        printf ("child process PID: %d \n", (int) pid);
     }
 
     return 0;
