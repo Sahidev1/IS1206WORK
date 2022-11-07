@@ -10,7 +10,7 @@
 #include <sys/stat.h>
 #include <string.h>
 
-#define BUFFER_SIZE 100
+#define BUFFER_SIZE 2048
 #define MAX_MSG_Q 10
 
 void init_mq_attr (struct mq_attr *attr, long maxmsg, long maxsize){
@@ -23,7 +23,7 @@ int main (int argc, char *argv[]){
         printf("Please enter 1 argument: the path to the text file!\n");
         return -1;
     }
-    char *msgname = "/der";
+    char *msgname = "/ders0";
     char read_buffer[BUFFER_SIZE];
     ssize_t bytes_read;
     int fd;
@@ -43,14 +43,14 @@ int main (int argc, char *argv[]){
         return -1;
     }
     close(fd);
-    printf ("%s\n", read_buffer);
+    //printf ("%s\n", read_buffer);
 
-    init_mq_attr (&attr, MAX_MSG_Q, BUFFER_SIZE);
-    mqd = mq_open(msgname, O_CREAT | O_WRONLY, 0660, &attr);
+    mqd = mq_open(msgname, O_CREAT | O_WRONLY, 0660, NULL);
     if (mqd == -1){
         perror("mq_open() failed");
         return -1;
     }
+    //printf("%d\n", (int) strlen(read_buffer));
     mq_send(mqd, read_buffer, strlen(read_buffer) , 0);
     /*if (msgsend == -1){
         perror("send() failed");
