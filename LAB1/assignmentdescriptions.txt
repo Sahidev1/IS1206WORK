@@ -1,0 +1,8 @@
+#Part 1 task description:
+
+Work with fork,exec, and wait to create new processes and use pipe to communicate between parent and child processes.
+
+#Part 2 task description:
+
+First process reads the contents of a textfile, sends it the to second process through a message queue,
+second process count the number of words in the text file and prints it out.

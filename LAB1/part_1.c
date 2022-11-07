@@ -9,7 +9,7 @@
 
 int main (){
     int fd[2]; //File descriptors declaration
-    pipe(fd); //Creating the pipe.
+    int pipestatus = pipe(fd); //Creating the pipe.
     pid_t pid = fork();
     //printf ("File descriptors: 0: %d, 1: %d \n", fd[0], fd[1]);
     switch (pid)
