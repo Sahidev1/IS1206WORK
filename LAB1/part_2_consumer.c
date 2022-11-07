@@ -13,11 +13,6 @@
 #define MAX_MSG_Q 10
 #define MQ_NAME "/derp"
 
-void init_mq_attr (struct mq_attr *attr, long maxmsg, long maxsize){
-    attr->mq_maxmsg = maxmsg;
-    attr->mq_msgsize = maxsize;
-}
-
 int main(){
     struct mq_attr attr;
     mqd_t mqd;
@@ -53,20 +48,5 @@ int main(){
         execlp("wc","wc","-w", NULL);
         break;
     }
-
-    /*
-    mqd = mq_open (MQ_NAME, O_RDONLY);
-    mq_getattr(mqd, &attr);
-
-    msg_buffer = calloc(attr.mq_msgsize, 1);
-
-    mq_receive(mqd, msg_buffer, attr.mq_msgsize, &prio);
-    printf ("Message: %s\n", msg_buffer);
-
-    mq_close(mqd);
-
-    printf ("endofcode\n");
-
-    */
     return 0;
 }

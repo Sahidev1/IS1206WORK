@@ -14,11 +14,6 @@
 #define MAX_MSG_Q 10
 #define MQ_NAME "/derp"
 
-void init_mq_attr (struct mq_attr *attr, long maxmsg, long maxsize){
-    attr->mq_maxmsg = maxmsg;
-    attr->mq_msgsize = maxsize;
-}
-
 int main (int argc, char *argv[]){
     if (argc != 2) {
         printf("Please enter 1 argument: the path to the text file!\n");
@@ -43,21 +38,14 @@ int main (int argc, char *argv[]){
         return -1;
     }
     close(fd);
-    //printf ("%s\n", read_buffer);
 
     mqd = mq_open(MQ_NAME, O_CREAT | O_WRONLY, 0660, NULL);
     if (mqd == -1){
         perror("mq_open() failed");
         return -1;
     }
-    //printf("%d\n", (int) strlen(read_buffer));
     mq_send(mqd, read_buffer, strlen(read_buffer) , 0);
-    /*if (msgsend == -1){
-        perror("send() failed");
-    }*/
-
     mq_close(mqd);
 
-    printf("endofcode\n");
     return 0;
 } 
