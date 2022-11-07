@@ -12,6 +12,7 @@
 
 #define BUFFER_SIZE 2048
 #define MAX_MSG_Q 10
+#define MQ_NAME "/derp"
 
 void init_mq_attr (struct mq_attr *attr, long maxmsg, long maxsize){
     attr->mq_maxmsg = maxmsg;
@@ -23,7 +24,6 @@ int main (int argc, char *argv[]){
         printf("Please enter 1 argument: the path to the text file!\n");
         return -1;
     }
-    char *msgname = "/ders0";
     char read_buffer[BUFFER_SIZE];
     ssize_t bytes_read;
     int fd;
@@ -45,7 +45,7 @@ int main (int argc, char *argv[]){
     close(fd);
     //printf ("%s\n", read_buffer);
 
-    mqd = mq_open(msgname, O_CREAT | O_WRONLY, 0660, NULL);
+    mqd = mq_open(MQ_NAME, O_CREAT | O_WRONLY, 0660, NULL);
     if (mqd == -1){
         perror("mq_open() failed");
         return -1;
