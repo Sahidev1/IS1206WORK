@@ -42,6 +42,7 @@ int main(){
         mq_close(mqd);
         
         write(fd[1], msg_buffer, strlen(msg_buffer) + 1);
+        printf("Number of words: ");
         break;
     default:
         close(fd[1]);
