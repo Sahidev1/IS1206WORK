@@ -6,16 +6,21 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <string.h>
+#include <errno.h>
+
+#define ERROR 1
 
 int main (){
     int fd[2]; //File descriptors declaration
-    int pipestatus = pipe(fd); //Creating the pipe.
-    pid_t pid = fork();
-    //printf ("File descriptors: 0: %d, 1: %d \n", fd[0], fd[1]);
-    switch (pid)
+    if (pipe(fd) == -1){
+        perror("pipe() failed");
+        return ERROR;
+    } //Creating the pipe.
+
+    switch (fork())
     {
     case -1:
-        printf ("Failed to to fork\n");
+        perror("fork() failed");
         break;
     case 0: //CHILD
         close(fd[0]); //closing read end.
@@ -23,7 +28,7 @@ int main (){
         //what would've gone to stdout goes to fd[1] instead, write end of the pipe.
         dup2(fd[1], 1); 
 
-        execlp ("ls", "ls", "/", NULL);
+        if(execlp ("ls", "ls", "/", NULL) == -1) perror("child execlp() failed");
         break;
     default: //PARENT
         close(fd[1]); // closing write end.
@@ -33,10 +38,10 @@ int main (){
         dup2(fd[0],0);
 
         close(fd[0]);
-        execlp("wc","wc","-l", NULL);
+        if(execlp("wc","wc","-l", NULL) == -1) perror("parent execlp() failed");
         break;
     }
-    return 0;
+    return ERROR;
 }
 
 
