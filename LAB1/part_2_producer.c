@@ -15,6 +15,12 @@
 #define MQ_NAME "/derp"
 #define ERR_CODE 1
 
+/*
+    This program creates a message queue if one does not already exists, if one exists it opens the existing message queue. 
+    The program then reads the contents of a file and puts the content on the message queue.
+
+    Arguments: file_path , the path to the file that is to be read.
+*/
 int main (int argc, char *argv[]){
     if (argc != 2) {
         printf("Please enter 1 argument: the path to the text file!\n");

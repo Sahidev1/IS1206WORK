@@ -10,6 +10,11 @@
 
 #define ERROR 1
 
+/**
+ * This program gives you the number of filed in the "/" directory. 
+ * The program creates a parent and child process. The child process executes "ls /" and the output is redirected to the stdin 
+ * of the parent process which runs "wc -l". 
+*/
 int main (){
     int fd[2]; //File descriptors declaration
     if (pipe(fd) == -1){

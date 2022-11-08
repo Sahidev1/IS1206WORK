@@ -18,6 +18,11 @@
 #define MQ_NAME "/derp"
 #define ERR_CODE 1
 
+/**
+ * This program runs a parent and child process.
+ * The child process opens a message queue and reads it content, then the read content is put in the pipe.
+ * The parent process redirects the contents of the pipe to stdin and runs "wc -w" to count the number of words.
+*/
 int main(){
     struct mq_attr attr;
     mqd_t mqd;
