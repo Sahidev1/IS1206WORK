@@ -16,6 +16,7 @@
 #define BUFFER_SIZE 2048
 #define MAX_MSG_Q 10
 #define MQ_NAME "/derp"
+#define ERR_CODE 1
 
 int main(){
     struct mq_attr attr;
@@ -25,7 +26,10 @@ int main(){
     int pipestatus;
     char* msg_buffer;
 
-    pipestatus = pipe(fd);
+    if (pipe(fd) == -1){
+        perror("pipe() failed");
+        return ERR_CODE;
+    }
 
     switch (fork())
     {
@@ -35,13 +39,23 @@ int main(){
     case 0:
         close(fd[0]);
 
-        mqd = mq_open (MQ_NAME, O_RDONLY);
+        mqd = mq_open (MQ_NAME, O_RDONLY | O_NONBLOCK);
+        if (mqd == -1){
+            perror("mq_open() failed");
+            return ERR_CODE;
+        }
         mq_getattr(mqd, &attr);
         msg_buffer = calloc(attr.mq_msgsize, 1);
-        mq_receive(mqd, msg_buffer, attr.mq_msgsize, &prio);
+        if(mq_receive(mqd, msg_buffer, attr.mq_msgsize, &prio) == -1){
+            free(msg_buffer);
+            mq_close(mqd);
+            perror("mq_receive() failed");
+            return ERR_CODE;
+        }
         mq_close(mqd);
         
         write(fd[1], msg_buffer, strlen(msg_buffer) + 1);
+        free(msg_buffer);
         printf("Number of words: ");
         break;
     default:
@@ -50,7 +64,10 @@ int main(){
 
         dup2(fd[0], 0);
         close (fd[0]);
-        execlp("wc","wc","-w", NULL);
+        if(execlp("wc","wc","-w", NULL) == -1) {
+            perror ("exelcp() failed");
+            return ERR_CODE;
+        }
         break;
     }
     return 0;
