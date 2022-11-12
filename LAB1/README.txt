@@ -1,1 +1,1 @@
-Run build.sh to compile the files.
+Run build shell to compile the files.
