@@ -1,0 +1,8 @@
+
+*.out
+
+*.pdf
+
+LAB1/assigndescription.txt
+
+LAB1/kill_mqueues.c
