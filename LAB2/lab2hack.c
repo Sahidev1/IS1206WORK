@@ -40,8 +40,8 @@ void* thread_fun(void *arg){
             pthread_mutex_unlock(&lock);
         }
         else{
-            pthread_mutex_unlock(&lock);
             update_blocked_threads(argptr->thread_id);
+            pthread_mutex_unlock(&lock);
             break;
         }
     }
