@@ -1,5 +1,5 @@
 /*
-    Author: Ali Sahibi
+    Author: Ali Sahibi  
 */
 
 #include <stdio.h>
@@ -75,5 +75,6 @@ int main(void){
         printf("TID: %ld worked on the buffer %d times\n", retval->tid, retval->thread_work);
         free(retval);
     }
+        printf("Total buffer accesses: %d\n", buffer);
     return 0;
 }
