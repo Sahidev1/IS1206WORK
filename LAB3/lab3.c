@@ -30,6 +30,7 @@ void read_page_info (page_info *pi, int logaddr){
     pi->page_nr = logaddr & PAGE_OFFSET_MASK; 
     logaddr >>= 8;
     pi->offset = logaddr & PAGE_OFFSET_MASK;
+    //printf ("read page: %d \n", pi->page_nr);
 }
 
 void print_page_info (page_info *pi){
@@ -40,6 +41,8 @@ int main (int argc, char *argv[]){
     FILE *fptr;
     page_info pifo;
     PHYSICAL_MEM = calloc(MEM_SIZE, sizeof(char));
+    doubly freelist;
+    doubly *listptr = malloc(sizeof(doubly));
 
     fptr = fopen(argv[1], READ_MODE);
     if (fptr == NULL) {
@@ -49,14 +52,22 @@ int main (int argc, char *argv[]){
 
     page_table pt;
     init_page_table(&pt);
+    init_list(listptr);
+    print_debug("boop");
+    listptr->curr = listptr->tail;
+    pop_curr_frame(listptr);
+    
 
     read_buffer = malloc(sizeof(char) * READ_BUFFER_SIZE);
     size_t size = (size_t) READ_BUFFER_SIZE;
     int currAddr = -1;
+    int baddr;
     while (getline(&read_buffer, &size, fptr) != -1){
         currAddr = atoi(read_buffer);
         read_page_info(&pifo, currAddr);
-        //print_page_info(&pifo);
+       // print_page_info(&pifo);
+        get_page_base_addr(&pt, pifo.page_nr, &baddr);
+        //printf(" phys base: %d ,", baddr);
     }
 
     int base;
