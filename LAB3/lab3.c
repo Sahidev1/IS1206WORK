@@ -9,7 +9,7 @@
 #define READ_BUFFER_SIZE 32
 #define MEM_SIZE (1<<16)
 
-char PHYSICAL_MEM[MEM_SIZE];
+char* PHYSICAL_MEM;
 
 int debug_counter = 0;
 char *read_buffer;
@@ -39,6 +39,7 @@ void print_page_info (page_info *pi){
 int main (int argc, char *argv[]){
     FILE *fptr;
     page_info pifo;
+    PHYSICAL_MEM = calloc(MEM_SIZE, sizeof(char));
 
     fptr = fopen(argv[1], READ_MODE);
     if (fptr == NULL) {
@@ -59,10 +60,9 @@ int main (int argc, char *argv[]){
     }
 
     int base;
-    int vals = set_page_base_addr(&pt, 11, 177);
-    get_page_base_addr(&pt, 11, &base);
+    get_page_base_addr(&pt, 2, &base);
     printf("val: %d\n", base);
-    int fpgnr = find_base_addr(&pt, 177);
+    int fpgnr = find_base_addr(&pt, 256);
     printf ("pgnr found: %d\n", fpgnr);
 
     return 0;
