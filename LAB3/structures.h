@@ -1,4 +1,4 @@
-
+#include <stdio.h>
 
 #ifndef STRUCTURES_H_
 #define STRUCTURES_H
@@ -6,18 +6,20 @@
 #define PAGE_TABLE_SIZE 256
 #define FRAME_SIZE 256
 #define SET_USED 0x80000000
+#define DISK_PATH "data/BACKING_STORE.bin"
 
 typedef struct fnode {
     int frame_address;
     struct fnode *next;
-    struct fnode *prev;
 }fnode;
 
-typedef struct doubly_linked_list{
-    fnode *curr;
+typedef struct fifo{
     fnode *head;
-    fnode *tail;
-}doubly;
+}fifo;
+
+typedef struct disc_reader{
+    FILE *fstream;
+}disc_reader;
 
 typedef struct page_table {
     int page_array[PAGE_TABLE_SIZE];
@@ -31,11 +33,12 @@ int find_base_addr (page_table *pt, int base_addr);
 
 void init_page_table(page_table *pt);
 
+int is_page_free(page_table *pt, int pgnr);
 
-int init_freelist (doubly *freelist);
+int init_freelist (fifo *freelist);
 
-int pop_curr_frame (doubly *freelist);
+int get_free_frame_baddr (fifo *freelist);
 
-int init_list (doubly *freelist);
+int deque_free_frame (fifo *freelist, int *addr);
 
 #endif
