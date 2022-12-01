@@ -99,3 +99,67 @@ int write_frame (char *page_buffer, char *PHYS_MEM, int base_addr){
         PHYS_MEM[i++] = page_buffer[j++];
     }
 }
+
+void init_TBL(TBL *tbl_cache){
+    tbl_cache->max_entries = TBL_ENTRIES;
+    tbl_cache->curr_entries = 0;
+    tbl_cache->head = NULL;
+    tbl_cache->tail = NULL;
+}
+
+int TBL_enqueue(TBL *tbl_cache, int pgnr, int frame_addr){
+    if (tbl_cache->head == NULL){
+        tbl_cache->head = malloc (sizeof(tnode));
+        tbl_cache->head->frame_address = frame_addr;
+        tbl_cache->head->page_nummer = pgnr;
+        tbl_cache->tail = tbl_cache->head;
+        tbl_cache->head->next = NULL;
+        tbl_cache->curr_entries++;
+        return 0;
+    }
+    tnode *enqueue;
+    while (tbl_cache->curr_entries >= tbl_cache->max_entries){
+        TBL_dequeue(tbl_cache, NULL, NULL);
+    }
+    if (tbl_cache->curr_entries < tbl_cache->max_entries){
+        enqueue = malloc (sizeof(tnode));
+        enqueue->frame_address = frame_addr;
+        enqueue->page_nummer = pgnr;
+        enqueue->next = tbl_cache->head;
+        tbl_cache->head->prev = enqueue;
+        enqueue->prev = NULL;
+        tbl_cache->head = enqueue;
+        tbl_cache->curr_entries++;
+        return 0;
+    }
+    return -1;
+}
+
+void TBL_dequeue(TBL *tbl_cache, int* page_nr, int* frame_addr){
+    if (page_nr != NULL && frame_addr != NULL){
+        *page_nr = tbl_cache->tail->page_nummer;
+        *frame_addr = tbl_cache->tail->frame_address;
+    }
+    tnode *temp = tbl_cache->tail;
+    tbl_cache->tail = tbl_cache->tail->prev;
+    if (tbl_cache->tail == NULL){
+        tbl_cache->head == NULL;
+    }
+    else {
+        tbl_cache->tail->next = NULL;
+    }
+    tbl_cache->curr_entries--;
+    free(temp);
+}
+
+int TBL_peek (TBL *tbl_cache, int page_nr, int *frame_addr){
+    tnode *head = tbl_cache->head;
+    while (head != NULL){
+        if(head->page_nummer == page_nr){
+            *frame_addr = head->frame_address;
+            return 0;
+        }
+        head = head->next;
+    }
+    return -1;
+}

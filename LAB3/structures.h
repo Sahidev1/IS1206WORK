@@ -10,6 +10,7 @@
 #define RIGHT_16BIT_MASK 0x0000ffff
 #define PAGE_OFFSET_MASK 0x000000ff
 #define READ_MODE "r"
+#define TBL_ENTRIES 16
 
 typedef struct page_info {
     int page_nr;
@@ -32,6 +33,20 @@ typedef struct disc_reader{
 typedef struct page_table {
     int page_array[PAGE_TABLE_SIZE];
 }page_table;
+
+typedef struct tnode {
+    struct tnode *next;
+    struct tnode *prev;
+    int page_nummer;
+    int frame_address;
+}tnode;
+
+typedef struct TBL {
+    int max_entries;
+    int curr_entries;
+    tnode *head;
+    tnode *tail;
+}TBL;
 
 int get_page_base_addr (page_table *pt, int pgnr, int *base_addr_ptr);
 
@@ -58,5 +73,15 @@ void open_disk (disc_reader *disc);
 int read_disk (disc_reader *disc, char* buffer ,int pgnr);
 
 int write_frame (char *page_buffer, char *PHYS_MEM, int base_addr);
+
+// TBL FUNCTIONS BELOW
+
+void init_TBL(TBL *tbl_cache);
+
+int TBL_enqueue(TBL *tbl_cache, int pgnr, int frame_addr);
+
+void TBL_dequeue(TBL *tbl_cache, int* page_nr, int* frame_addr);
+
+int TBL_peek (TBL *tbl_cache, int page_nr, int *frame_addr);
 
 #endif
