@@ -74,14 +74,18 @@ int read_disk (disc_reader *disc, char* buffer ,int pgnr);
 
 int write_frame (char *page_buffer, char *PHYS_MEM, int base_addr);
 
+void destruct_free_list (fifo *freelist);
+
 // TBL FUNCTIONS BELOW
 
 void init_TBL(TBL *tbl_cache);
 
 int TBL_enqueue(TBL *tbl_cache, int pgnr, int frame_addr);
 
-void TBL_dequeue(TBL *tbl_cache, int* page_nr, int* frame_addr);
+int TBL_dequeue(TBL *tbl_cache, int* page_nr, int* frame_addr);
 
 int TBL_peek (TBL *tbl_cache, int page_nr, int *frame_addr);
+
+void destruct_TBL (TBL *tbl_cache);
 
 #endif

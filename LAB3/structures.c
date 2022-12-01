@@ -71,7 +71,10 @@ int deque_free_frame (fifo *freelist, int *addr){
     return 0;
 }
 
-
+void destruct_free_list (fifo *freelist){
+    int holder;
+    while (deque_free_frame(freelist, &holder) == 0);
+}
 
 /* virtual address decoded functions */
 
@@ -137,7 +140,8 @@ int TBL_enqueue(TBL *tbl_cache, int pgnr, int frame_addr){
     return -1;
 }
 
-void TBL_dequeue(TBL *tbl_cache, int* page_nr, int* frame_addr){
+int TBL_dequeue(TBL *tbl_cache, int* page_nr, int* frame_addr){
+    if (tbl_cache->head == NULL || tbl_cache->tail == NULL) return -1;
     if (page_nr != NULL && frame_addr != NULL){
         *page_nr = tbl_cache->tail->page_nummer;
         *frame_addr = tbl_cache->tail->frame_address;
@@ -152,11 +156,16 @@ void TBL_dequeue(TBL *tbl_cache, int* page_nr, int* frame_addr){
     }
     tbl_cache->curr_entries--;
     free(temp);
+    return 0;
+}
+
+void destruct_TBL (TBL *tbl_cache){
+    while(TBL_dequeue(tbl_cache, NULL, NULL) == 0);
 }
 
 int TBL_peek (TBL *tbl_cache, int page_nr, int *frame_addr){
     tnode *head = tbl_cache->head;
-    while (head != NULL){
+    while (head != NULL){   
         if(head->page_nummer == page_nr){
             *frame_addr = head->frame_address;
             return 0;
