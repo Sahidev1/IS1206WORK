@@ -2,11 +2,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* page table functions */
+
 void init_page_table(page_table *pt){
     for(int i = 0; i < PAGE_TABLE_SIZE; i++){
         pt->page_array[i] = 0;
     }
-    //pt->page_array[PAGE_TABLE_SIZE - 1] -= 1;
 }
 
 int get_page_base_addr (page_table *pt, int pgnr, int *base_addr_ptr){
@@ -15,7 +16,7 @@ int get_page_base_addr (page_table *pt, int pgnr, int *base_addr_ptr){
     return 0;
 }
 
-/* checks if page slot is free, page slots that have never
+/* checks if page slot is free(holds no valid frame address), page slots that have never
     been written to have free bit set to 0, free bit is
     MSB.
 */
@@ -39,6 +40,8 @@ int find_base_addr (page_table *pt, int base_addr){
     }
     return -1;
 }
+
+/* Free frame list functions*/
 
 int init_freelist (fifo *freelist){
     freelist->head = malloc (sizeof(fnode));
@@ -68,16 +71,22 @@ int deque_free_frame (fifo *freelist, int *addr){
     return 0;
 }
 
-void read_page_info (page_info *pi, int logaddr){
+
+
+/* virtual address decoded functions */
+
+void translate_virt_addr (decoded_virt *pi, int logaddr){
     logaddr &= RIGHT_16BIT_MASK;
     pi->offset = logaddr & PAGE_OFFSET_MASK; 
     logaddr >>= 8;
     pi->page_nr = logaddr & PAGE_OFFSET_MASK;
 }
 
-void print_page_info (page_info *pi){
+void print_page_info (decoded_virt *pi){
     printf("Page Nr: %d, Offset: %d \n", pi->page_nr, pi->offset);
 }
+
+/* Disc functions*/
 
 void open_disk (disc_reader *disc){
     disc->fstream = fopen(DISK_PATH, READ_MODE);
@@ -91,14 +100,7 @@ int read_disk (disc_reader *disc, char* buffer ,int pgnr){
     return 0;
 }
 
-int write_frame (char *page_buffer, char *PHYS_MEM, int base_addr){
-    int lastIndex = base_addr + FRAME_SIZE - 1;
-    int i = base_addr;
-    int j = 0;
-    while (i <= lastIndex){
-        PHYS_MEM[i++] = page_buffer[j++];
-    }
-}
+/* TBL functions */
 
 void init_TBL(TBL *tbl_cache){
     tbl_cache->max_entries = TBL_ENTRIES;
@@ -162,4 +164,15 @@ int TBL_peek (TBL *tbl_cache, int page_nr, int *frame_addr){
         head = head->next;
     }
     return -1;
+}
+
+/* Other functions*/
+
+int write_frame (char *page_buffer, char *PHYS_MEM, int base_addr){
+    int lastIndex = base_addr + FRAME_SIZE - 1;
+    int i = base_addr;
+    int j = 0;
+    while (i <= lastIndex){
+        PHYS_MEM[i++] = page_buffer[j++];
+    }
 }

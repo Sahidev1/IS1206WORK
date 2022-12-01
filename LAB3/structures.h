@@ -12,10 +12,10 @@
 #define READ_MODE "r"
 #define TBL_ENTRIES 16
 
-typedef struct page_info {
+typedef struct decoded_virt {
     int page_nr;
     int offset;
-} page_info;
+} decoded_virt;
 
 typedef struct fnode {
     int frame_address;
@@ -64,9 +64,9 @@ int get_free_frame_baddr (fifo *freelist);
 
 int deque_free_frame (fifo *freelist, int *addr);
 
-void read_page_info (page_info *pi, int logaddr);
+void translate_virt_addr (decoded_virt *pi, int logaddr);
 
-void print_page_info (page_info *pi);
+void print_page_info (decoded_virt *pi);
 
 void open_disk (disc_reader *disc);
 

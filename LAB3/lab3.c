@@ -27,11 +27,10 @@ int main (int argc, char *argv[]){
     page_fault_count = 0;
     FILE *fptr;
     disc_reader disc; 
-    page_info pifo;
+    decoded_virt pifo;
     fifo *list;
     page_table pt;
     TBL *tbl_cache;
-
 
     PHYSICAL_MEMORY = calloc(MEM_SIZE, sizeof(char));
     list = malloc(sizeof(fifo));
@@ -42,7 +41,6 @@ int main (int argc, char *argv[]){
         printf ("failed to open file, make sure path is correct!\n");
         return -1;
     }
-
 
     init_page_table(&pt);
     init_freelist(list);
@@ -57,7 +55,7 @@ int main (int argc, char *argv[]){
     char stored_value; 
     while (getline(&read_buffer, &size, fptr) != -1){
         virtual_address = atoi(read_buffer);
-        read_page_info(&pifo, virtual_address);
+        translate_virt_addr(&pifo, virtual_address);
         if(TBL_peek(tbl_cache, pifo.page_nr, &base_address) == 0){
             TBL_hit_count++;
             physical_address = base_address + pifo.offset;
