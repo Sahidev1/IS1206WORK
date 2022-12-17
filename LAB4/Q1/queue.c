@@ -58,6 +58,20 @@ int pop_request (queue *q){
     return cylinder_pos;
 }
 
+int pull_specific_request (queue *q, node *request_node){
+    if (request_node == NULL) return -1;
+    if (request_node == q->head) return pull_first_request (q);
+    if (request_node == q->tail) return pop_request(q);
+    int request_val = request_node->cylinder_request;
+    node* prev_to = request_node->prev;
+    node* next_to = request_node->next;
+    prev_to->next = next_to;
+    next_to->prev = prev_to;
+    q->curr_entries--;
+    free(request_node);
+    return request_val;
+} 
+
 int pull_closest_request (queue *q, int curr_head){
     node *head = q->head;
     if (head == NULL) return -1;
@@ -70,30 +84,8 @@ int pull_closest_request (queue *q, int curr_head){
         }
         head = head->next;
     }
-    if (closest_ptr == q->head) return pull_first_request(q);
-    if (closest_ptr == q->tail) return pop_request(q);
-    closest_val = closest_ptr->cylinder_request;
-    node* prev_to = closest_ptr->prev;
-    node* next_to = closest_ptr->next;
-    prev_to->next = next_to;
-    next_to->prev = prev_to;
-    q->curr_entries--;
-    free(closest_ptr);
-    return closest_val;
+    return pull_specific_request (q, closest_ptr);
 }
-
-int pull_specific_request (queue *q, node *request_node){
-    if (request_node == NULL) return -1;
-    if (request_node == q->head) return pull_first_request (q);
-    if (request_node == q->tail) return pop_request(q);
-    int request_val = request_node->cylinder_request;
-    node* prev_to = request_node->prev;
-    node* next_to = request_node->next;
-    prev_to->next = next_to;
-    next_to->prev = prev_to;
-    free(request_node);
-    return request_val;
-} 
 
 int search_cylinder (queue *request_queue, int cylinder_number){
     node *head = request_queue->head;
