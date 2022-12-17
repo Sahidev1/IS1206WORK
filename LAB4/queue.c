@@ -81,3 +81,34 @@ int pull_closest_request (queue *q, int curr_head){
     free(closest_ptr);
     return closest_val;
 }
+
+int pull_specific_request (queue *q, node *request_node){
+    if (request_node == NULL) return -1;
+    if (request_node == q->head) return pull_first_request (q);
+    if (request_node == q->tail) return pop_request(q);
+    int request_val = request_node->cylinder_request;
+    node* prev_to = request_node->prev;
+    node* next_to = request_node->next;
+    prev_to->next = next_to;
+    next_to->prev = prev_to;
+    free(request_node);
+    return request_val;
+} 
+
+int search_cylinder (queue *request_queue, int cylinder_number){
+    node *head = request_queue->head;
+    int hits = 0;
+    node *tmp;
+    while (head != NULL){
+        if (head->cylinder_request == cylinder_number){
+            hits++;
+            tmp = head;
+            head = head->next;
+            pull_specific_request(request_queue, tmp);
+        }
+        else {
+            head = head->next;
+        }
+    }
+    return hits;
+}
