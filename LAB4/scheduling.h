@@ -10,4 +10,8 @@ int SCAN (int *req_arr, int arr_size, int initial_headpos);
 
 int LOOK (int *req_arr, int arr_size, int initial_headpos);
 
+int C_SCAN (int *req_arr, int arr_size, int initial_headpos);
+
+int C_LOOK (int *req_arr, int arr_size, int initial_headpos);
+
 #endif

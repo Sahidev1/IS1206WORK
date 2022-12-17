@@ -26,13 +26,17 @@ int main (int argc, char* argv[]){
 
 
     int cyl_moves = FCFS(request_arr, NR_REQUESTS, initial_pos);
-    printf ("cylinder movements: %d\n", cyl_moves);
+    printf ("FCFS cylinder movements: %d\n", cyl_moves);
     cyl_moves = SSTF(request_arr, NR_REQUESTS, initial_pos);
-    printf ("cylinder movements: %d\n", cyl_moves);
+    printf ("SSTF cylinder movements: %d\n", cyl_moves);
     cyl_moves = SCAN (request_arr, NR_REQUESTS, initial_pos);
-    printf ("cylinder movements: %d\n", cyl_moves);
+    printf ("SCAN cylinder movements: %d\n", cyl_moves);
     cyl_moves = LOOK (request_arr, NR_REQUESTS, initial_pos);
-    printf ("cylinder movements: %d\n", cyl_moves);
+    printf ("LOOK cylinder movements: %d\n", cyl_moves);
+    cyl_moves = C_SCAN (request_arr, NR_REQUESTS, initial_pos);
+    printf ("C-SCAN cylinder movements: %d\n", cyl_moves);
+    cyl_moves = C_LOOK (request_arr, NR_REQUESTS, initial_pos);
+    printf ("C-LOOK cylinder movements: %d\n", cyl_moves);
 
     return 0;
 }

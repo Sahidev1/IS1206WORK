@@ -8,6 +8,21 @@ void fill_queue (queue *q, int* requests, int req_size){
     }
 }
 
+void find_extremes_disk (int *req_arr, int arr_size , int *min_cyl, int *max_cyl){
+    int lowest_cyl = 4999;
+    int highest_cyl = 0;
+    for (int i = 0; i < arr_size; i++){
+        if (req_arr[i] < lowest_cyl){
+            lowest_cyl = req_arr[i];
+        }
+        if (req_arr[i] > highest_cyl){
+            highest_cyl = req_arr[i];
+        }
+    }
+    *min_cyl = lowest_cyl;
+    *max_cyl = highest_cyl;
+}
+
 int FCFS (int *req_arr, int arr_size, int initial_headpos){
     int cylinder_movements = 0;
     int headpos = initial_headpos;
@@ -73,6 +88,37 @@ int scanner (queue *q, int start_pos, int start_cyl, int end_cyl){
     return cylinder_movements;
 }
 
+int c_scanner (queue *q, int start_pos, int start_cyl, int end_cyl){
+    int pos = start_pos;
+    int last_hitpos = start_pos;
+    int cylinder_movements = 0;
+    int hits;
+    while (pos <= end_cyl){
+        hits = search_cylinder(q, pos);
+        if (hits > 0){
+            // printf("%d->", pos);
+            cylinder_movements += abs(pos - last_hitpos);
+            last_hitpos = pos;
+        }
+        if (pos == 4999){
+            // triggered by C-SCAN
+            last_hitpos = pos;
+        }
+        pos++;
+    }
+    pos = start_cyl;
+    while (pos < start_pos){
+        hits = search_cylinder(q, pos);
+        if (hits > 0){
+            // printf("%d->", pos);
+            cylinder_movements += abs(pos - last_hitpos);
+            last_hitpos = pos;
+        }
+        pos++;
+    }
+    return cylinder_movements;
+}
+
 int SCAN (int *req_arr, int arr_size, int initial_headpos){
     queue *q = malloc (sizeof(queue));
     init_queue(q);
@@ -84,21 +130,34 @@ int SCAN (int *req_arr, int arr_size, int initial_headpos){
 
 
 int LOOK (int *req_arr, int arr_size, int initial_headpos){
-    int lowest_cyl = 4999;
-    int highest_cyl = 0;
-    for (int i = 0; i < arr_size; i++){
-        if (req_arr[i] < lowest_cyl){
-            lowest_cyl = req_arr[i];
-        }
-        if (req_arr[i] > highest_cyl){
-            highest_cyl = req_arr[i];
-        }
-    }
-    printf ("lowest cyl: %d, highest cyl: %d \n", lowest_cyl, highest_cyl);
+    int lowest_cyl;
+    int highest_cyl;
+    find_extremes_disk(req_arr, arr_size, &lowest_cyl, &highest_cyl);
     queue *q = malloc (sizeof(queue));
     init_queue(q);
     fill_queue(q, req_arr, arr_size);
     int cylinder_movements = scanner(q, initial_headpos, lowest_cyl, highest_cyl);
+    free(q);
+    return cylinder_movements;
+}
+
+int C_SCAN (int *req_arr, int arr_size, int initial_headpos){
+    queue *q = malloc (sizeof(queue));
+    init_queue(q);
+    fill_queue(q, req_arr, arr_size);
+    int cylinder_movements = c_scanner(q, initial_headpos, 0, 4999);
+    free(q);
+    return cylinder_movements; 
+}
+
+int C_LOOK (int *req_arr, int arr_size, int initial_headpos){
+    int lowest_cyl;
+    int highest_cyl;
+    find_extremes_disk(req_arr, arr_size, &lowest_cyl, &highest_cyl);
+    queue *q = malloc (sizeof(queue));
+    init_queue(q);
+    fill_queue(q, req_arr, arr_size);
+    int cylinder_movements = c_scanner(q, initial_headpos, lowest_cyl, highest_cyl);
     free(q);
     return cylinder_movements;
 }
